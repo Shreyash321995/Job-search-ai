@@ -1,0 +1,107 @@
+from docx import Document
+from pypdf import PdfReader
+import os
+
+app = FastAPI()
+
+UPLOAD_DIR = "uploads"
+
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+@app.get("/")
+def home():
+        return {
+                        "message": "Welcome to Job Search AI"
+                            }
+
+        @app.post("/upload")
+        async def upload_resume(file: UploadFile = File(...)):
+
+                file_path = f"{UPLOAD_DIR}/{file.filename}"
+
+                    with open(file_path, "wb") as f:
+                                f.write(await file.read())
+
+                                    text = ""
+
+                                        # DOCX
+                                            if file.filename.lower().endswith(".docx"):
+
+                                                        doc = Document(file_path)
+
+                                                                for para in doc.paragraphs:
+                                                                                text += para.text + "\n"
+
+                                                                                    # PDF
+                                                                                        elif file.filename.lower().endswith(".pdf"):
+
+                                                                                                    pdf = PdfReader(file_path)
+
+                                                                                                            for page in pdf.pages:
+
+                                                                                                                            page_text = page.extract_text()
+
+                                                                                                                                        if page_text:
+                                                                                                                                                            text += page_text + "\n"
+
+                                                                                                                                                                # TXT
+                                                                                                                                                                    elif file.filename.lower().endswith(".txt"):
+
+                                                                                                                                                                                with open(file_path, "r", encoding="utf-8") as f:
+                                                                                                                                                                                                text = f.read()
+
+                                                                                                                                                                                                    # Unsupported file
+                                                                                                                                                                                                        else:
+
+                                                                                                                                                                                                                    return {
+                                                                                                                                                                                                                                        "error": "Supported formats: .docx, .pdf, .txt"
+                                                                                                                                                                                                                                                }
+
+                                                                                                                                                                                                                        skills_db = [
+                                                                                                                                                                                                                                        "AWS",
+                                                                                                                                                                                                                                                "Docker",
+                                                                                                                                                                                                                                                        "Kubernetes",
+                                                                                                                                                                                                                                                                "Terraform",
+                                                                                                                                                                                                                                                                        "Jenkins",
+                                                                                                                                                                                                                                                                                "Git",
+                                                                                                                                                                                                                                                                                        "Linux",
+                                                                                                                                                                                                                                                                                                "Python",
+                                                                                                                                                                                                                                                                                                        "Ansible",
+                                                                                                                                                                                                                                                                                                                "Prometheus",
+                                                                                                                                                                                                                                                                                                                        "Grafana",
+                                                                                                                                                                                                                                                                                                                                "MySQL",
+                                                                                                                                                                                                                                                                                                                                        "Oracle",
+                                                                                                                                                                                                                                                                                                                                                "Bash"
+                                                                                                                                                                                                                                                                                                                                                    ]
+
+                                                                                                                                                                                                                            matched_skills = []
+
+                                                                                                                                                                                                                                for skill in skills_db:
+                                                                                                                                                                                                                                            if skill.lower() in text.lower():
+                                                                                                                                                                                                                                                            matched_skills.append(skill)
+
+                                                                                                                                                                                                                                                                job_matches = []
+
+                                                                                                                                                                                                                                                                    for job in jobs:
+
+                                                                                                                                                                                                                                                                                common_skills = list(
+                                                                                                                                                                                                                                                                                                    set(matched_skills) &
+                                                                                                                                                                                                                                                                                                                set(job["skills"])
+                                                                                                                                                                                                                                                                                                                        )
+
+                                                                                                                                                                                                                                                                                        score = int(
+                                                                                                                                                                                                                                                                                                            len(common_skills) /
+                                                                                                                                                                                                                                                                                                                        len(job["skills"]) * 100
+                                                                                                                                                                                                                                                                                                                                )
+
+                                                                                                                                                                                                                                                                                                job_matches.append({
+                                                                                                                                                                                                                                                                                                                "job_title": job["title"],
+                                                                                                                                                                                                                                                                                                                            "match_score": score,
+                                                                                                                                                                                                                                                                                                                                        "matched_skills": common_skills
+                                                                                                                                                                                                                                                                                                                                                })
+
+                                                                                                                                                                                                                                                                                                    return {
+                                                                                                                                                                                                                                                                                                                    "filename": file.filename,
+                                                                                                                                                                                                                                                                                                                            "skills": matched_skills,
+                                                                                                                                                                                                                                                                                                                                    "job_matches": job_matches
+                                                                                                                                                                                                                                                                                                                                        }
