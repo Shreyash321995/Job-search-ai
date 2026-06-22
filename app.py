@@ -4,6 +4,7 @@ from docx import Document
 from pypdf import PdfReader
 import sqlite3
 import os
+import re
 
 app = FastAPI()
 
@@ -11,11 +12,14 @@ UPLOAD_DIR = "uploads"
 
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
+
 @app.get("/")
 def home():
     return {
         "message": "Welcome to Job Search AI"
     }
+
+
 @app.get("/resumes")
 def get_resumes():
 
@@ -27,6 +31,9 @@ def get_resumes():
         """
         SELECT id,
                filename,
+               candidate_name,
+               email,
+               mobile,
                skills,
                match_score,
                upload_time
@@ -51,6 +58,8 @@ def get_resumes():
         })
 
     return resumes
+
+
 @app.get("/resume/{id}")
 def get_resume(id: int):
 
@@ -62,6 +71,9 @@ def get_resume(id: int):
         """
         SELECT id,
                filename,
+               candidate_name,
+               email,
+               mobile,
                skills,
                match_score,
                upload_time
@@ -129,6 +141,56 @@ async def upload_resume(file: UploadFile = File(...)):
             "error": "Supported formats: .docx, .pdf, .txt"
         }
 
+    # Extract Email
+
+    email_match = re.search(
+        r'[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}',
+        text
+    )
+
+    email = ""
+
+    if email_match:
+        email = email_match.group()
+
+    # Extract Mobile
+
+    clean_text = text.replace(" ", "").replace("-", "")
+
+    mobile_match = re.search(
+        r'(\+91)?[6-9]\d{9}',
+        clean_text
+    )
+
+    mobile = ""
+
+    if mobile_match:
+        mobile = mobile_match.group()
+
+    # Extract Candidate Name
+
+    candidate_name = ""
+
+    lines = text.split("\n")
+
+    for line in lines:
+
+        line = line.strip()
+
+        if (
+            line
+            and "@" not in line
+            and len(line.split()) <= 5
+        ):
+            candidate_name = line
+            break
+
+    print("===== EXTRACTED DETAILS =====")
+    print("NAME:", candidate_name)
+    print("EMAIL:", email)
+    print("MOBILE:", mobile)
+    print("=============================")
+
     skills_db = [
         "AWS",
         "Docker",
@@ -175,16 +237,35 @@ async def upload_resume(file: UploadFile = File(...)):
     conn = sqlite3.connect("database.db")
 
     cursor = conn.cursor()
+
     skills_string = ",".join(matched_skills)
 
     highest_match_score = max(
-    job["match_score"]
-    for job in job_matches
+        job["match_score"]
+        for job in job_matches
     )
 
     cursor.execute(
-       """INSERT INTO resumes (filename,skills,match_score) VALUES (?,?,?)""",
-        (file.filename,skills_string,highest_match_score)
+        """
+        INSERT INTO resumes
+        (
+            filename,
+            candidate_name,
+            email,
+            mobile,
+            skills,
+            match_score
+        )
+        VALUES (?, ?, ?, ?, ?, ?)
+        """,
+        (
+            file.filename,
+            candidate_name,
+            email,
+            mobile,
+            skills_string,
+            highest_match_score
+        )
     )
 
     conn.commit()
@@ -193,6 +274,9 @@ async def upload_resume(file: UploadFile = File(...)):
 
     return {
         "filename": file.filename,
+        "candidate_name": candidate_name,
+        "email": email,
+        "mobile": mobile,
         "skills": matched_skills,
         "job_matches": job_matches
     }
