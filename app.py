@@ -50,11 +50,14 @@ def get_resumes():
     for row in rows:
 
         resumes.append({
-            "id": row[0],
+            "id": row[0], 
             "filename": row[1],
-            "skills": row[2],
-            "match_score": row[3],
-            "upload_time": row[4]
+            "candidate_Name": row[2],
+            "email": row[3],
+            "mobile": row[4],
+            "skills": row[5],
+            "match_score": row[6],
+            "upload_time": row[7]
         })
 
     return resumes
@@ -95,9 +98,12 @@ def get_resume(id: int):
     return {
         "id": row[0],
         "filename": row[1],
-        "skills": row[2],
-        "match_score": row[3],
-        "upload_time": row[4]
+        "candidate_name": row[2],
+        "email": row[3],
+        "mobile": row[4],
+        "skills": row[5],
+        "matched_score": row[6],
+        "upload_time": row[7]
     }
 @app.post("/upload")
 async def upload_resume(file: UploadFile = File(...)):
