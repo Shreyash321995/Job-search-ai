@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Job Search AI</title>
+
+    <link rel="stylesheet"
+          href="/static/style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>🚀 Job Search AI</h1>
+
+        <p>
+            Upload your resume and find matching jobs
+        </p>
+
+        <form action="/upload"
+              method="post"
+              enctype="multipart/form-data">
+
+            <input type="file"
+                   name="file"
+                   required>
+
+            <button type="submit">
+                Upload Resume
+            </button>
+
+        </form>
+
+    </div>
+
+</body>
+
+</html>

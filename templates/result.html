@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Resume Result</title>
+
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Resume Analysis Result</h1>
+
+<p><b>Name:</b> {{ candidate_name }}</p>
+
+<p><b>Email:</b> {{ email }}</p>
+
+<p><b>Mobile:</b> {{ mobile }}</p>
+
+<h2>Skills</h2>
+
+<ul>
+{% for skill in skills %}
+<li>{{ skill }}</li>
+{% endfor %}
+</ul>
+
+<h2>Job Matches</h2>
+
+{% for job in job_matches %}
+
+<div class="job-card">
+
+<h3>{{ job.job_title }}</h3>
+
+<p>
+Match Score:
+{% if job.match_score >= 80 %}
+
+<span class="badge green">
+{{ job.match_score }}%
+</span>
+
+{% elif job.match_score >= 50 %}
+
+<span class="badge yellow">
+{{ job.match_score }}%
+</span>
+
+{% else %}
+
+<span class="badge red">
+{{ job.match_score }}%
+</span>
+
+{% endif %}
+</p>
+
+<p>Matched Skills</p>
+
+<ul>
+
+{% for skill in job.matched_skills %}
+
+<li>{{ skill }}</li>
+
+{% endfor %}
+
+</ul>
+
+</div>
+
+{% endfor %}
+<br>
+
+<a href="/">
+    <button>
+        Upload Another Resume
+    </button>
+</a>
+
+</div>
+
+</body>
+
+</html>

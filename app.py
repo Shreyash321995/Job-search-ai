@@ -1,3 +1,6 @@
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
+from fastapi import Request
 from fastapi import FastAPI, UploadFile, File
 from jobs import jobs
 from docx import Document
@@ -6,7 +9,13 @@ import sqlite3
 import os
 import re
 
+from resume_parser import extract_resume_details
+
 app = FastAPI()
+
+templates = Jinja2Templates(directory="templates")
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 UPLOAD_DIR = "uploads"
 
@@ -14,10 +23,22 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 
 @app.get("/")
-def home():
-    return {
-        "message": "Welcome to Job Search AI"
+def home(request: Request):
+
+    #return {"message": "Frontend Test"}
+    return templates.TemplateResponse(
+ #       request=request,
+  #      name="index.html"
+          "index.html",
+          {
+        "request": request,
+#        "candidate_name": candidate_name,
+#        "email": email,
+#        "mobile": mobile,
+#        "skills": matched_skills,
+#        "job_matches": job_matches
     }
+    )
 
 
 @app.get("/resumes")
@@ -106,142 +127,31 @@ def get_resume(id: int):
         "upload_time": row[7]
     }
 @app.post("/upload")
-async def upload_resume(file: UploadFile = File(...)):
+async def upload_resume( #file: UploadFile = File(...)):
+            request:Request,
+            file: UploadFile = File(...)
+):
 
     file_path = f"{UPLOAD_DIR}/{file.filename}"
 
     with open(file_path, "wb") as f:
         f.write(await file.read())
 
-    text = ""
+    details = extract_resume_details(file_path)
 
-    # DOCX
-    if file.filename.lower().endswith(".docx"):
+    text = details["text"]
 
-        doc = Document(file_path)
+    candidate_name = details["candidate_name"]
 
-        for para in doc.paragraphs:
-            text += para.text + "\n"
+    email = details["email"]
 
-    # PDF
-    elif file.filename.lower().endswith(".pdf"):
+    mobile = details["mobile"]
 
-        pdf = PdfReader(file_path)
+    matched_skills = details["matched_skills"]
 
-        for page in pdf.pages:
-
-            page_text = page.extract_text()
-
-            if page_text:
-                text += page_text + "\n"
-
-    # TXT
-    elif file.filename.lower().endswith(".txt"):
-
-        with open(file_path, "r", encoding="utf-8") as f:
-            text = f.read()
-
-    else:
-
-        return {
-            "error": "Supported formats: .docx, .pdf, .txt"
-        }
-
-    # Extract Email
-
-    email_match = re.search(
-        r'[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}',
-        text
-    )
-
-    email = ""
-
-    if email_match:
-        email = email_match.group()
-
-    # Extract Mobile
-
-    clean_text = text.replace(" ", "").replace("-", "")
-
-    mobile_match = re.search(
-        r'(\+91)?[6-9]\d{9}',
-        clean_text
-    )
-
-    mobile = ""
-
-    if mobile_match:
-        mobile = mobile_match.group()
-
-    # Extract Candidate Name
-
-    candidate_name = ""
-
-    lines = text.split("\n")
-
-    for line in lines:
-
-        line = line.strip()
-
-        if (
-            line
-            and "@" not in line
-            and len(line.split()) <= 5
-        ):
-            candidate_name = line
-            break
-
-    print("===== EXTRACTED DETAILS =====")
-    print("NAME:", candidate_name)
-    print("EMAIL:", email)
-    print("MOBILE:", mobile)
-    print("=============================")
-
-    skills_db = [
-        "AWS",
-        "Docker",
-        "Kubernetes",
-        "Terraform",
-        "Jenkins",
-        "Git",
-        "Linux",
-        "Python",
-        "Ansible",
-        "Prometheus",
-        "Grafana",
-        "MySQL",
-        "Oracle",
-        "Bash"
-    ]
-
-    matched_skills = []
-
-    for skill in skills_db:
-        if skill.lower() in text.lower():
-            matched_skills.append(skill)
-
-    job_matches = []
-
-    for job in jobs:
-
-        common_skills = list(
-            set(matched_skills) &
-            set(job["skills"])
-        )
-
-        score = int(
-            len(common_skills) /
-            len(job["skills"]) * 100
-        )
-
-        job_matches.append({
-            "job_title": job["title"],
-            "match_score": score,
-            "matched_skills": common_skills
-        })
+    job_matches = details["job_matches"]
 
     conn = sqlite3.connect("database.db")
-
     cursor = conn.cursor()
 
     skills_string = ",".join(matched_skills)
@@ -275,10 +185,12 @@ async def upload_resume(file: UploadFile = File(...)):
     )
 
     conn.commit()
-
     conn.close()
 
-    return {
+    return templates.TemplateResponse(
+    "result.html",
+{
+         "request":request,
         "filename": file.filename,
         "candidate_name": candidate_name,
         "email": email,
@@ -286,3 +198,4 @@ async def upload_resume(file: UploadFile = File(...)):
         "skills": matched_skills,
         "job_matches": job_matches
     }
+)
