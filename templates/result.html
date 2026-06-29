@@ -1,33 +1,55 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <title>Resume Result</title>
 
-    <link rel="stylesheet" href="/static/style.css">
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Resume Analysis</title>
+
+    <link rel="stylesheet"
+          href="/static/style.css">
+
 </head>
 
 <body>
 
 <div class="container">
 
-<h1>Resume Analysis Result</h1>
+<h1>📄 Resume Analysis Report</h1>
 
-<p><b>Name:</b> {{ candidate_name }}</p>
+<div class="card">
 
-<p><b>Email:</b> {{ email }}</p>
+<h2>👤 Candidate Details</h2>
 
-<p><b>Mobile:</b> {{ mobile }}</p>
+<p><strong>Name:</strong> {{ candidate_name }}</p>
 
-<h2>Skills</h2>
+<p><strong>Email:</strong> {{ email }}</p>
 
-<ul>
+<p><strong>Mobile:</strong> {{ mobile }}</p>
+
+</div>
+
+<br>
+
+<div class="card">
+
+<h2>🛠 Extracted Skills</h2>
+
 {% for skill in skills %}
-<li>{{ skill }}</li>
+<span class="skill">{{ skill }}</span>
 {% endfor %}
-</ul>
 
-<h2>Job Matches</h2>
+</div>
+
+<br>
+
+<div class="card">
+
+<h2>🎯 Job Matching Results</h2>
 
 {% for job in job_matches %}
 
@@ -35,8 +57,6 @@
 
 <h3>{{ job.job_title }}</h3>
 
-<p>
-Match Score:
 {% if job.match_score >= 80 %}
 
 <span class="badge green">
@@ -56,28 +76,48 @@ Match Score:
 </span>
 
 {% endif %}
-</p>
 
-<p>Matched Skills</p>
+<div class="progress">
 
-<ul>
+<div class="progress-bar"
+style="width: {{ job.match_score }}%;">
+
+</div>
+
+</div>
+
+<h4>Matched Skills</h4>
 
 {% for skill in job.matched_skills %}
-
-<li>{{ skill }}</li>
-
+<span class="skill">
+{{ skill }}
+</span>
 {% endfor %}
 
-</ul>
+<hr>
 
 </div>
 
 {% endfor %}
+
+</div>
+
 <br>
 
 <a href="/">
-    <button>
-        Upload Another Resume
+
+<button>
+
+⬅ Upload Another Resume
+
+</button>
+
+</a>
+<br>
+
+<a href="/dashboard">
+    <button type="button">
+        📊 View Dashboard
     </button>
 </a>
 

@@ -1,38 +1,117 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
     <title>Job Search AI</title>
 
     <link rel="stylesheet"
           href="/static/style.css">
+
 </head>
 
 <body>
 
-    <div class="container">
 
-        <h1>🚀 Job Search AI</h1>
+<div class="container">
 
-        <p>
-            Upload your resume and find matching jobs
-        </p>
+    <h1>🚀 AI Resume Screening System</h1>
 
-        <form action="/upload"
-              method="post"
-              enctype="multipart/form-data">
+    <p>
+       <p>
+        Upload your resume, extract skills using AI,
+       and instantly find the best matching jobs.
+       </p>
+    </p>
 
-            <input type="file"
-                   name="file"
-                   required>
+    <form action="/upload"
+          method="post"
+          enctype="multipart/form-data">
 
-            <button type="submit">
-                Upload Resume
-            </button>
+        <input
+            type="file"
+            name="file"
+            accept=".pdf,.docx,.txt"
+            required>
 
-        </form>
+        <button type="submit">
+            Upload Resume
+        </button>
+
+    </form>
+<br>
+<a href="/dashboard">
+    <button type="button">
+        📊Open Dashboard
+    </button>
+</a>
+
+<a href="/history">
+    <button type="button">
+        📜 Resume History
+    </button>
+</a>
+    <br>
+
+    <div class="card">
+
+        <h2>✨ Features</h2>
+
+        <p>📄 Upload PDF / DOCX Resume</p>
+
+        <p>🤖 AI Resume Parsing</p>
+
+        <p>🛠 Automatic Skill Extraction</p>
+
+        <p>🎯 Smart Job Matching</p>
+
+        <p>📊 Resume Dashboard</p>
+
+        <p>💾 SQLite Database Storage</p>
 
     </div>
+
+    <br>
+
+    <div class="card">
+
+        <h2>⚙️ Supported Technologies</h2>
+
+        <span class="skill">Linux</span>
+
+        <span class="skill">AWS</span>
+
+        <span class="skill">Docker</span>
+
+        <span class="skill">Kubernetes</span>
+
+        <span class="skill">Terraform</span>
+
+        <span class="skill">Jenkins</span>
+
+        <span class="skill">Git</span>
+
+        <span class="skill">Python</span>
+
+        <span class="skill">Prometheus</span>
+
+        <span class="skill">Grafana</span>
+
+    </div>
+
+    <br>
+
+    <p style="font-size:14px;color:#cbd5e1;">
+
+       Built with ❤️ FastAPI • Python • SQLite • Jinja2 • HTML • CSS
+    </p>
+
+</div>
 
 </body>
 

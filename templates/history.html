@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Resume History</title>
+
+<link rel="stylesheet" href="/static/style.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>📜 Resume History</h1>
+
+<table>
+
+<tr>
+<th>Name</th>
+<th>Email</th>
+<th>Score</th>
+<th>Uploaded</th>
+</tr>
+
+{% for resume in resumes %}
+
+<tr>
+
+<td>{{ resume[1] }}</td>
+
+<td>{{ resume[2] }}</td>
+
+<td>{{ resume[3] }}%</td>
+
+<td>{{ resume[4] }}</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+<br>
+
+<a href="/dashboard">
+<button>← Back Dashboard</button>
+</a>
+
+</div>
+
+</body>
+</html>

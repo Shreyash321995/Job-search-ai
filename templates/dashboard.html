@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Job Search AI Dashboard</title>
+
+    <link rel="stylesheet" href="/static/style.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>📊 Job Search AI Dashboard</h1>
+
+    <div class="stats-container">
+
+        <div class="stat-card">
+            <h3>Total Resumes</h3>
+            <h2>{{ total_resumes }}</h2>
+        </div>
+
+        <div class="stat-card">
+            <h3>Highest Score</h3>
+            <h2>{{ highest_score }}%</h2>
+        </div>
+
+        <div class="stat-card">
+            <h3>Average Score</h3>
+            <h2>{{ average_score }}%</h2>
+        </div>
+
+    </div>
+    <div class="card chart-card">
+
+    <h2>📈 Resume Match Score Analytics</h2>
+
+    <canvas id="scoreChart"></canvas>
+
+  </div>
+       <div class="card">
+
+<h2>🥇 Top 5 Candidates</h2>
+
+<table>
+
+{% if top_candidates %}
+
+{% for candidate in top_candidates %}
+
+<tr>
+   ...
+</tr>
+
+{% endfor %}
+
+{% else %}
+
+<tr>
+   <td colspan="4" style="text-align:center;">
+      🏆 No candidates found.
+   </td>
+</tr>
+
+{% endif %}
+   <tr>
+      <th>Rank</th>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Score</th>
+  </tr>
+
+{% for candidate in top_candidates %}
+
+  <tr>
+
+    <td>{{ loop.index }}</td>
+
+    <td>{{ candidate[0] }}</td>
+
+    <td>{{ candidate[1] }}</td>
+
+<td>
+
+  <span class="badge green">
+
+{{ candidate[2] }}%
+
+   </span>
+
+</td>
+
+</tr>
+
+  {% endfor %}
+
+  </table>
+
+</div>
+     <hr>
+
+<h2>🔍 Search Resume</h2>
+
+<form action="/dashboard" method="get">
+
+
+   <input
+    type="text"
+    name="search"
+    value="{{ search }}"
+    placeholder="Search by Name or Email">
+    
+
+    <button type="submit">
+        Search
+    </button>
+
+</form>
+
+<br>
+<br>
+
+    <h2>📂 Recent Uploads</h2>
+      
+
+<table>
+
+<tr>
+    <th>Candidate</th>
+    <th>Resume</th>
+    <th>Score</th>
+    <th>Uploaded</th>
+    <th>Email</th>
+    <th>Mobile</th>
+    <th>Download</th>
+    <th>Delete</th>
+</tr>
+{% if recent_uploads %}
+
+{% for resume in recent_uploads %}
+
+<tr>
+    ...
+</tr>
+
+{% endfor %}
+
+{% else %}
+
+<tr>
+    <td colspan="8" style="text-align:center;">
+        📂 No resumes uploaded yet.
+    </td>
+</tr>
+
+{% endif %}
+
+{% for resume in recent_uploads %}
+
+<tr>
+
+    <td>{{ resume[1] }}</td>
+    <td>{{ resume[2] }}</td>
+    <td>{{ resume[3] }}%</td>
+    <td>{{ resume[4] }}</td>
+    <td>{{ resume[5] }}</td>
+    <td>{{ resume[6] }}</td>
+
+    <td>
+        <a href="/download/{{ resume[2] }}">
+            <button>⬇ Download</button>
+        </a>
+    </td>
+
+    <td>
+        <a href="/delete/{{ resume[0] }}">
+            <button class="delete-btn">
+                🗑 Delete
+            </button>
+        </a>
+    </td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+    <div class="button-group">
+
+        <a href="/">
+            <button>🏠 Home</button>
+        </a>
+
+        <a href="/history">
+            <button>📜 Resume History</button>
+        </a>
+
+    </div>
+       
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% if labels %}
+
+<canvas id="scoreChart"></canvas>
+
+{% else %}
+
+<div class="empty-card">
+
+📈
+
+No analytics available.
+
+Upload resumes to see statistics.
+
+</div>
+
+{% endif %}
+
+<script>
+
+const ctx = document.getElementById('scoreChart');
+
+new Chart(ctx, {
+
+    type: 'bar',
+
+    indexAxis:'y',
+
+    data: {
+
+        labels: {{ labels | tojson }},
+
+        datasets: [{
+
+            label: 'Match Score',
+
+            data: {{ scores | tojson }},
+
+            backgroundColor: [
+
+                '#22c55e',
+
+                '#3b82f6',
+
+                '#f59e0b',
+
+                '#ef4444',
+
+                '#8b5cf6'
+
+            ],
+
+            borderRadius: 8
+
+        }]
+
+    },
+
+    options: {
+
+        responsive: true,
+
+        plugins: {
+
+            legend: {
+
+                display: false
+
+            }
+
+        },
+
+        scales: {
+
+            y: {
+
+                beginAtZero: true,
+
+                max: 100
+
+            }
+
+        }
+
+    }
+
+});
+
+</script>
+</body>
+
+</html>
