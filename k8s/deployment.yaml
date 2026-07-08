@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: job-search-ai
+  labels:
+    app: job-search-ai
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: job-search-ai
+
+  template:
+    metadata:
+      labels:
+        app: job-search-ai
+
+    spec:
+      containers:
+      - name: job-search-ai
+
+        image: job-search-ai-job-search-ai:latest
+
+        imagePullPolicy: IfNotPresent
+
+        ports:
+        - containerPort: 8000

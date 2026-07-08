@@ -27,22 +27,14 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 @app.get("/")
 def home(request: Request):
 
-    #return {"message": "Frontend Test"}
     return templates.TemplateResponse(
- #       request=request,
-  #      name="index.html"
-          "index.html",
-          {
-        "request": request,
-#        "candidate_name": candidate_name,
-#        "email": email,
-#        "mobile": mobile,
-#        "skills": matched_skills,
-#        "job_matches": job_matches
-    }
+        request=request,
+        name="index.html",
+        context={
+            "jobs": jobs,
+            "message": ""
+        }
     )
-
-
 @app.get("/resumes")
 def get_resumes():
 
@@ -216,19 +208,19 @@ def dashboard(
     conn.close()
 
     return templates.TemplateResponse(
-        "dashboard.html",
-        {
-            "request": request,
-            "total_resumes": total_resumes,
-            "highest_score": highest_score,
-            "average_score": round(average_score, 2),
-            "labels": labels,
-            "scores": scores,
-            "top_candidates": top_candidates,
-            "recent_uploads": recent_uploads,
-            "search": search
-        }
-    )
+    request=request,
+    name="dashboard.html",
+    context={
+        "total_resumes": total_resumes,
+        "highest_score": highest_score,
+        "average_score": round(average_score, 2),
+        "labels": labels,
+        "scores": scores,
+        "top_candidates": top_candidates,
+        "recent_uploads": recent_uploads,
+        "search": search,
+    },
+)
 @app.get("/history")
 def history(request: Request):
 
@@ -251,12 +243,12 @@ def history(request: Request):
     conn.close()
 
     return templates.TemplateResponse(
-        "history.html",
-        {
-            "request": request,
-            "resumes": resumes
-        }
-    )
+    request=request,
+    name="history.html",
+    context={
+        "resumes": resumes
+    }
+)
 @app.post("/upload")
 async def upload_resume( #file: UploadFile = File(...)):
             request:Request,
@@ -386,17 +378,17 @@ async def upload_resume( #file: UploadFile = File(...)):
     conn.close()
 
     return templates.TemplateResponse(
-        "result.html",
-        {
-            "request": request,
-            "filename": file.filename,
-            "candidate_name": candidate_name,
-            "email": email,
-            "mobile": mobile,
-            "skills": matched_skills,
-            "job_matches": job_matches
-        }
-    )
+    request=request,
+    name="result.html",
+    context={
+        "candidate_name": candidate_name,
+        "email": email,
+        "mobile": mobile,
+        "skills": matched_skills,
+        "match_score": highest_match_score,
+        "job_matches": job_matches,
+    },
+)
 @app.get("/download/{filename}")
 def download_resume(filename: str):
 
