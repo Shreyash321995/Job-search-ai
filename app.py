@@ -7,9 +7,18 @@ from docx import Document
 from pypdf import PdfReader
 from fastapi.responses import FileResponse
 from fastapi.responses import RedirectResponse
-import sqlite3
+
 import os
 import re
+import db
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(message)s"
+)
+
+logger = logging.getLogger(__name__)
 
 from resume_parser import extract_resume_details
 
@@ -38,8 +47,7 @@ def home(request: Request):
 @app.get("/resumes")
 def get_resumes():
 
-    conn = sqlite3.connect("database.db")
-
+    conn = db.get_connection()
     cursor = conn.cursor()
 
     cursor.execute(
@@ -81,8 +89,7 @@ def get_resumes():
 @app.get("/resume/{id}")
 def get_resume(id: int):
 
-    conn = sqlite3.connect("database.db")
-
+    conn = db.get_connection()
     cursor = conn.cursor()
 
     cursor.execute(
@@ -126,7 +133,7 @@ def dashboard(
     search: str = ""
 ):
 
-    conn = sqlite3.connect("database.db")
+    conn = db.get_connection()
     cursor = conn.cursor()
 
     # -------------------------
@@ -224,7 +231,7 @@ def dashboard(
 @app.get("/history")
 def history(request: Request):
 
-    conn = sqlite3.connect("database.db")
+    conn = db.get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -274,7 +281,7 @@ async def upload_resume( #file: UploadFile = File(...)):
 
     job_matches = details["job_matches"]
 
-    conn = sqlite3.connect("database.db")
+    conn = db.get_connection()
     cursor = conn.cursor()
 
     skills_string = ",".join(matched_skills)
@@ -404,7 +411,7 @@ from fastapi.responses import RedirectResponse
 @app.get("/delete/{resume_id}")
 def delete_resume(resume_id: int):
 
-    conn = sqlite3.connect("database.db")
+    conn = db.get_connection()
     cursor = conn.cursor()
 
     # Find filename

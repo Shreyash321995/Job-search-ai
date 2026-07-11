@@ -1,21 +1,60 @@
 import sqlite3
+import logging
 
-conn = sqlite3.connect("database.db")
+DATABASE = "database.db"
 
-cursor = conn.cursor()
-
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS resumes (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    filename TEXT,
-    skills TEXT,
-    match_score INTEGER,
-    upload_time DATETIME DEFAULT CURRENT_TIMESTAMP
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
 )
-""")
 
-conn.commit()
 
-conn.close()
+def get_connection():
+    """
+    Returns SQLite connection.
+    """
 
-print("Database and table created successfully")
+    conn = sqlite3.connect(DATABASE)
+
+    conn.row_factory = sqlite3.Row
+
+    return conn
+
+
+def initialize_database():
+    """
+    Creates resumes table if it doesn't exist.
+    """
+
+    conn = get_connection()
+
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS resumes
+        (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+            filename TEXT NOT NULL,
+
+            candidate_name TEXT,
+
+            email TEXT,
+
+            mobile TEXT,
+
+            skills TEXT,
+
+            match_score INTEGER,
+
+            upload_time DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+        """
+    )
+
+    conn.commit()
+
+    conn.close()
+
+    logging.info("Database initialized successfully.")
