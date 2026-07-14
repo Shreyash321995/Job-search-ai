@@ -24,6 +24,9 @@ from resume_parser import extract_resume_details
 
 app = FastAPI()
 
+db.initialize_database()
+logger.info("Database initialized.")
+
 templates = Jinja2Templates(directory="templates")
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
