@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>AI Interview Assistant</title>
+
+    <style>
+
+        body{
+            font-family:Arial;
+            background:#f4f7fb;
+            margin:40px;
+        }
+
+        .card{
+            background:white;
+            padding:25px;
+            border-radius:10px;
+            box-shadow:0 0 10px rgba(0,0,0,.1);
+            margin-bottom:25px;
+        }
+
+        h1{
+            color:#1565c0;
+        }
+
+        h2{
+            color:#0d47a1;
+        }
+
+        button{
+            background:#1565c0;
+            color:white;
+            border:none;
+            padding:12px 22px;
+            border-radius:8px;
+            cursor:pointer;
+            font-size:16px;
+        }
+
+        button:hover{
+            background:#0d47a1;
+        }
+
+        pre{
+            white-space:pre-wrap;
+            font-family:Arial;
+            background:#eef5ff;
+            padding:20px;
+            border-radius:10px;
+        }
+
+        table{
+            width:100%;
+        }
+
+        td{
+            padding:8px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="card">
+
+<h1>🤖 AI Interview Assistant</h1>
+
+<form action="/interview" method="post">
+
+<label><b>Select Resume</b></label>
+
+<br><br>
+
+<select name="resume_id">
+
+{% for resume in resumes %}
+
+<option value="{{resume.id}}">
+{{resume.id}} - {{resume.filename}}
+</option>
+
+{% endfor %}
+
+</select>
+
+<br><br>
+
+<button type="submit">
+✅ Generate Top 10 DevOps Interview Questions
+</button>
+
+</form>
+
+</div>
+
+{% if analysis %}
+
+<div class="card">
+
+<h2>Candidate Details</h2>
+
+<table>
+
+<tr>
+<td><b>Name</b></td>
+<td>{{analysis.candidate_name}}</td>
+</tr>
+
+<tr>
+<td><b>Email</b></td>
+<td>{{analysis.email}}</td>
+</tr>
+
+<tr>
+<td><b>Mobile</b></td>
+<td>{{analysis.mobile}}</td>
+</tr>
+
+<tr>
+<td><b>Resume</b></td>
+<td>{{analysis.filename}}</td>
+</tr>
+
+<tr>
+<td><b>Skills</b></td>
+<td>{{analysis.skills}}</td>
+</tr>
+
+<tr>
+<td><b>Match Score</b></td>
+<td>{{analysis.match_score}}%</td>
+</tr>
+
+<tr>
+<td><b>Uploaded</b></td>
+<td>{{analysis.upload_time}}</td>
+</tr>
+
+</table>
+
+</div>
+
+<div class="card">
+
+<h2>🤖 Top 10 Interview Questions</h2>
+
+<pre>{{analysis.ai_response}}</pre>
+
+</div>
+
+{% endif %}
+<hr>
+
+<div style="text-align:center; margin-top:40px;">
+
+    <a href="/thankyou">
+
+        <button style="
+            background:#28a745;
+            color:white;
+            border:none;
+            padding:14px 28px;
+            border-radius:8px;
+            font-size:18px;
+            cursor:pointer;">
+
+            ✅ Finish Interview
+
+        </button>
+
+    </a>
+
+</div>
+</body>
+</html>

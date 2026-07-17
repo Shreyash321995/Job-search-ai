@@ -1,0 +1,21 @@
+def build_interview_prompt(resume):
+
+    return f"""
+You are an experienced Senior DevOps interviewer.
+
+Candidate Name:
+{resume['candidate_name']}
+
+Skills:
+{resume['skills']}
+
+Generate:
+
+1. Professional Summary
+2. Skill Assessment
+3. 10 DevOps Interview Questions
+4. Expected Answers
+5. Overall Interview Readiness Score
+
+Format the output professionally.
+"""

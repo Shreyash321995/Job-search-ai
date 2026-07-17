@@ -19,11 +19,6 @@ from pypdf import PdfReader
 from fastapi.responses import FileResponse
 from fastapi.responses import RedirectResponse
 from ai.interview import router as interview_router
-from ai.ollama_client import generate_response
-from ai.prompts import build_interview_prompt
-#from ai.prompts import build_interview_prompt
-from db import get_resume_details
-from fastapi.responses import HTMLResponse
 
 import os
 import re
@@ -45,7 +40,6 @@ app = FastAPI()
 register_metrics(app)
 register_middleware(app)
 
-app.include_router(interview_router)
 from monitoring.metrics import register_metrics
 from monitoring.middleware import register_middleware
 
@@ -481,32 +475,4 @@ def delete_resume(resume_id: int):
     return RedirectResponse(
         url="/dashboard",
         status_code=303
-    )
-@app.post("/interview")
-def interview(resume_id: int):
-
-    # Get resume from DB
-    resume = get_resume_details(resume_id)
-
-    if not resume:
-        return {"error": "Resume not found"}
-
-    # Create prompt
-    prompt = build_interview_prompt(resume)
-
-    # Call Ollama
-    ai_response = generate_response(prompt)
-
-    # Return response
-    return {
-        "resume": dict(resume),
-        "ai_response": ai_response
-    }
-@app.get("/thankyou")
-async def thankyou(request: Request):
-    return templates.TemplateResponse(
-        "thankyou.html",
-        {
-            "request": request
-        }
     )

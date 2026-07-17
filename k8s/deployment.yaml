@@ -1,5 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
+
 metadata:
   name: job-search-ai
   labels:
@@ -27,3 +28,38 @@ spec:
 
         ports:
         - containerPort: 8000
+
+        env:
+        - name: PYTHONUNBUFFERED
+          value: "1"
+
+        - name: OLLAMA_URL
+          value: "http://ollama-service:11434/api/generate"
+
+        - name: OLLAMA_MODEL
+          value: "phi3"
+
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "256Mi"
+
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8000
+
+          initialDelaySeconds: 10
+          periodSeconds: 10
+
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8000
+
+          initialDelaySeconds: 30
+          periodSeconds: 20

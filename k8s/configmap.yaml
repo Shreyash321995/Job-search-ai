@@ -8,3 +8,8 @@ data:
   APP_NAME: "Job Search AI"
   ENVIRONMENT: "development"
   LOG_LEVEL: "INFO"
+
+data:
+  OLLAMA_URL: "http://ollama-service:11434/api/generate"
+  OLLAMA_MODEL: "phi3"
+  PYTHONUNBUFFERED: "1"

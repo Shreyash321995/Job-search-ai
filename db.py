@@ -58,3 +58,24 @@ def initialize_database():
     conn.close()
 
     logging.info("Database initialized successfully.")
+
+def get_resume_details(resume_id):
+    """
+    Returns complete resume details.
+    """
+
+    conn = get_connection()
+
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT *
+        FROM resumes
+        WHERE id = ?
+    """, (resume_id,))
+
+    resume = cursor.fetchone()
+
+    conn.close()
+
+    return resume

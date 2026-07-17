@@ -19,3 +19,7 @@ python-dotenv
 aiofiles
 
 sqlalchemy
+
+
+prometheus_client
+prometheus-client
